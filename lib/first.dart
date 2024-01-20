@@ -181,7 +181,7 @@ class _MyFormState extends State<MyForm> {
                                 return null; // Return null if validation passes
                               },
                             ),
-                            SizedBox(height: 10),
+                            const SizedBox(height: 10),
                             (isApiCalling)
                                 ? const Text(
                                     'Error Text fhrodsfdiuwhfdsdfewdsoijoiqashjdoiioasjhdoiaoijdojsadoa',
