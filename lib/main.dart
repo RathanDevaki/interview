@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:interview/customer_form.dart';
+
+import 'temp.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,7 +16,8 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 2, 52, 255)),
         useMaterial3: true,
       ),
       home: CustomerForm(),

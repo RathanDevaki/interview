@@ -15,9 +15,9 @@ class _CustomerFormState extends State<CustomerForm> {
   List<TextEditingController> _nameController = [];
   List<TextEditingController> _emailController = [];
   List<bool> isApiCallingList = [];
+  List<bool> isDateErrorList = [];
 
   int numberOfForms = 1;
-  bool isApiCalling = false;
 
   @override
   void initState() {
@@ -28,11 +28,14 @@ class _CustomerFormState extends State<CustomerForm> {
       _nameController.add(TextEditingController());
       _emailController.add(TextEditingController());
       isApiCallingList.add(false);
+      isDateErrorList.add(false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final _fontStyle = const TextStyle(
+        fontWeight: FontWeight.bold, color: Color.fromARGB(255, 31, 19, 251));
     return Scaffold(
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -123,11 +126,10 @@ class _CustomerFormState extends State<CustomerForm> {
                                         },
                                         decoration: InputDecoration(
                                           counterText: '',
-                                          labelText: 'AccNo',
-                                          floatingLabelStyle: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          hintText: 'Enter AccNo',
+                                          labelText: 'Account Number*',
+                                          floatingLabelStyle: _fontStyle,
+                                          hintText:
+                                              'Enter Account Number of the Family Member',
                                           border: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(4)),
@@ -188,8 +190,10 @@ class _CustomerFormState extends State<CustomerForm> {
                                           border: OutlineInputBorder(
                                               borderRadius:
                                                   BorderRadius.circular(4)),
-                                          labelText: 'DOB',
-                                          hintText: 'Enter DOB',
+                                          labelText: 'DOB*',
+                                          hintText:
+                                              'Select DOB of the Family Member',
+                                          floatingLabelStyle: _fontStyle,
                                           suffixIcon: IconButton(
                                             icon: const Icon(
                                               Icons.calendar_today,
@@ -203,7 +207,7 @@ class _CustomerFormState extends State<CustomerForm> {
                                         },
                                       ),
                                       const SizedBox(height: 10),
-                                      (isApiCallingList[i])
+                                      (isDateErrorList[i])
                                           ? const Padding(
                                               padding:
                                                   EdgeInsets.only(bottom: 8),
@@ -228,29 +232,28 @@ class _CustomerFormState extends State<CustomerForm> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Expanded(
-                                  child: IntrinsicWidth(
-                                    child: DropdownMenu<String>(
-                                      expandedInsets: const EdgeInsets.all(1),
+                                  child: DropdownMenu<String>(
+                                    expandedInsets: const EdgeInsets.all(1),
 
-                                      // initialSelection: dropdownListVal.first,
-                                      onSelected: (String? value) {
-                                        // This is called when the user selects an item.
-                                        setState(() {
-                                          //AppState
-                                          // dropdownValue = value!;
-                                        });
-                                      },
-                                      trailingIcon:
-                                          const Icon(Icons.arrow_downward),
-                                      label: const Text('Select'),
-                                      // errorText: 'Please Select',
-                                      dropdownMenuEntries: dropdownListVal
-                                          .map<DropdownMenuEntry<String>>(
-                                              (String value) {
-                                        return DropdownMenuEntry<String>(
-                                            value: value, label: value);
-                                      }).toList(),
-                                    ),
+                                    // initialSelection: dropdownListVal.first,
+                                    onSelected: (String? value) {
+                                      // This is called when the user selects an item.
+                                      setState(() {
+                                        //AppState
+                                        // dropdownValue = value!;
+                                      });
+                                    },
+
+                                    trailingIcon:
+                                        const Icon(Icons.arrow_downward),
+                                    label: const Text('Relation Type*'),
+                                    // errorText: 'Please Select',
+                                    dropdownMenuEntries: dropdownListVal
+                                        .map<DropdownMenuEntry<String>>(
+                                            (String value) {
+                                      return DropdownMenuEntry<String>(
+                                          value: value, label: value);
+                                    }).toList(),
                                   ),
                                 ),
                                 const SizedBox(width: 10),
@@ -265,9 +268,10 @@ class _CustomerFormState extends State<CustomerForm> {
                                               BorderRadius.circular(4)),
                                       labelText: 'Name',
                                       hintText: 'Enter Name',
+                                      floatingLabelStyle: _fontStyle,
                                     ),
                                     validator: (value) {
-                                      return null; // Return null if validation passes
+                                      return null;
                                     },
                                   ),
                                 ),
@@ -289,11 +293,11 @@ class _CustomerFormState extends State<CustomerForm> {
                                               BorderRadius.circular(4)),
                                       labelText: 'Email',
                                       hintText: 'Enter Email Id',
+                                      floatingLabelStyle: _fontStyle,
                                     ),
                                     validator: (value) {
-                                      // Add your nullvalidation logic for DOB here
                                       (value == null) ? 'Enter Email' : null;
-                                      return null; // Return null if validation passes
+                                      return null;
                                     },
                                   ),
                                 ),
@@ -319,10 +323,11 @@ class _CustomerFormState extends State<CustomerForm> {
                   _nameController.add(TextEditingController());
                   _emailController.add(TextEditingController());
                   isApiCallingList.add(false);
+                  isDateErrorList.add(false);
                 }
               });
             },
-            child: Text("Add Form"),
+            child: const Text("Add Form"),
           ),
           ElevatedButton(
             onPressed: () {
