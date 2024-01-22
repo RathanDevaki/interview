@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -18,8 +20,13 @@ class _CustomerFormState extends State<CustomerForm> {
   List<TextEditingController> _emailController = [];
   List<bool> isApiCallingList = [];
   List<bool> isDateErrorList = [];
+  List<String?> dropdownValue = [];
+  List<bool> nameEnabled = [];
+  List<bool> emailEnabled = [];
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  final emailRegEx =
+      r'^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-]+.)+[a-zA-Z]{2,}))$';
+  final nameRegex = r"^[a-zA-Z]+(?:['-]?[a-zA-Z]+)*$";
   int numberOfForms = 1;
 
   @override
@@ -32,12 +39,15 @@ class _CustomerFormState extends State<CustomerForm> {
       _emailController.add(TextEditingController());
       isApiCallingList.add(false);
       isDateErrorList.add(false);
+      dropdownValue.add(null);
+      nameEnabled.add(false);
+      emailEnabled.add(false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final _fontStyle = const TextStyle(
+    const fontStyle = TextStyle(
         fontWeight: FontWeight.bold, color: Color.fromARGB(255, 31, 19, 251));
     return Scaffold(
       body: Column(
@@ -45,6 +55,7 @@ class _CustomerFormState extends State<CustomerForm> {
         mainAxisSize: MainAxisSize.min,
         children: [
           Form(
+            autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: SizedBox(
               height: 320,
@@ -136,7 +147,7 @@ class _CustomerFormState extends State<CustomerForm> {
                                                         'familyMember${i + 1}']![
                                                     'familyAccountNumber']
                                                 ['displayName'],
-                                            floatingLabelStyle: _fontStyle,
+                                            floatingLabelStyle: fontStyle,
                                             hintText: jsonData[
                                                         'familyMember${i + 1}']![
                                                     'familyAccountNumber']
@@ -176,7 +187,7 @@ class _CustomerFormState extends State<CustomerForm> {
                                           onSaved: (value) {},
                                         ),
                                         const SizedBox(height: 10),
-                                        (isApiCallingList[i])
+                                        (is)
                                             ? Padding(
                                                 padding: const EdgeInsets.only(
                                                     bottom: 8),
@@ -212,7 +223,7 @@ class _CustomerFormState extends State<CustomerForm> {
                                             hintText: jsonData[
                                                     'familyMember${i + 1}']![
                                                 'familydob']['placeholder'],
-                                            floatingLabelStyle: _fontStyle,
+                                            floatingLabelStyle: fontStyle,
                                             suffixIcon: IconButton(
                                               icon: const Icon(
                                                 Icons.calendar_today,
@@ -252,33 +263,42 @@ class _CustomerFormState extends State<CustomerForm> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Expanded(
-                                    child: DropdownMenu<String>(
-                                      expandedInsets: const EdgeInsets.all(1),
-                                      onSelected: (String? value) {
+                                    child: DropdownButtonFormField<String>(
+                                      decoration: InputDecoration(
+                                        contentPadding:
+                                            const EdgeInsets.all(20.0),
+                                        border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(5.0),
+                                        ),
+                                        labelText:
+                                            jsonData['familyMember${i + 1}']![
+                                                    'familyRelationship']
+                                                ['displayName'],
+                                      ),
+                                      value: dropdownValue[i],
+                                      onChanged: (String? newValue) {
                                         setState(() {
-                                          // AppState
-                                          // dropdownValue = value!;
+                                          dropdownValue[i] = newValue!;
                                         });
                                       },
-                                      trailingIcon:
-                                          const Icon(Icons.arrow_downward),
-                                      label: Text(
-                                        jsonData['familyMember${i + 1}']![
-                                                'familyRelationship']
-                                            ['displayName'],
-                                      ),
-                                      errorText: (isApiCallingList[i] == true)
-                                          ? jsonData['familyMember${i + 1}']![
-                                              'familyRelationship']['errorMsg']
-                                          : null,
-                                      dropdownMenuEntries:
-                                          jsonData['familyMember${i + 1}']![
-                                                      'familyRelationship']
-                                                  ['Buttonvalues']
-                                              .map<DropdownMenuEntry<String>>(
-                                                  (String value) {
-                                        return DropdownMenuEntry<String>(
-                                            value: value, label: value);
+                                      validator: (value) {
+                                        if (value == null) {
+                                          return jsonData[
+                                                  'familyMember${i + 1}']![
+                                              'familyRelationship']['errorMsg'];
+                                        }
+                                        return null;
+                                      },
+                                      items: jsonData['familyMember${i + 1}']![
+                                                  'familyRelationship']
+                                              ['Buttonvalues']
+                                          .map<DropdownMenuItem<String>>(
+                                              (String value) {
+                                        return DropdownMenuItem<String>(
+                                          value: value,
+                                          child: Text(value),
+                                        );
                                       }).toList(),
                                     ),
                                   ),
@@ -288,7 +308,7 @@ class _CustomerFormState extends State<CustomerForm> {
                                       children: [
                                         TextFormField(
                                           controller: _nameController[i],
-                                          enabled: false,
+                                          enabled: nameEnabled[i],
                                           keyboardType: TextInputType.text,
                                           maxLength: int.parse(
                                             jsonData['familyMember${i + 1}']![
@@ -305,29 +325,32 @@ class _CustomerFormState extends State<CustomerForm> {
                                             hintText: jsonData[
                                                     'familyMember${i + 1}']![
                                                 'familyName']['placeholder'],
-                                            floatingLabelStyle: _fontStyle,
+                                            floatingLabelStyle: fontStyle,
                                           ),
                                           validator: (value) {
-                                            final RegExp regex = RegExp(jsonData[
-                                                    'familyMember${i + 1}']![
-                                                'familyName']['pattern']);
-                                            if (!regex.hasMatch(value ?? '')) {
-                                              return jsonData[
-                                                      'familyMember${i + 1}']![
-                                                  'familyName']['errorMsg'];
-                                            }
-                                            if (value!.length ==
-                                                int.parse(jsonData[
+                                            if (nameEnabled[i]) {
+                                              final RegExp regex =
+                                                  RegExp(nameRegex);
+                                              if (value!.isEmpty) {
+                                                return 'Name is Required';
+                                              }
+                                              if (!regex.hasMatch(value!)) {
+                                                return jsonData[
                                                         'familyMember${i + 1}']![
-                                                    'familyName']['maxLength'])) {
-                                              return jsonData[
-                                                      'familyMember${i + 1}']![
-                                                  'familyName']['maxText'];
+                                                    'familyName']['errorMsg'];
+                                              }
+                                              if (value.length ==
+                                                  int.parse(jsonData[
+                                                          'familyMember${i + 1}']![
+                                                      'familyName']['maxLength'])) {
+                                                return jsonData[
+                                                        'familyMember${i + 1}']![
+                                                    'familyName']['maxText'];
+                                              }
                                             }
                                             return null;
                                           },
                                         ),
-                                        const SizedBox(height: 10),
                                         (isDateErrorList[i])
                                             ? Padding(
                                                 padding: const EdgeInsets.only(
@@ -355,7 +378,7 @@ class _CustomerFormState extends State<CustomerForm> {
                                   Expanded(
                                     child: TextFormField(
                                       controller: _emailController[i],
-                                      enabled: true,
+                                      enabled: emailEnabled[i],
                                       maxLength: int.parse(
                                         jsonData['familyMember${i + 1}']
                                             ['familyEmail']['maxLength'],
@@ -372,32 +395,37 @@ class _CustomerFormState extends State<CustomerForm> {
                                         hintText:
                                             jsonData['familyMember${i + 1}']
                                                 ['familyEmail']['placeholder'],
-                                        floatingLabelStyle: _fontStyle,
+                                        floatingLabelStyle: fontStyle,
                                       ),
                                       validator: (value) {
-                                        if (value!.length ==
-                                            int.parse(
-                                                jsonData['familyMember${i + 1}']
-                                                        ['familyEmail']
-                                                    ['maxLength'])) {
-                                          return jsonData[
-                                                  'familyMember${i + 1}']
-                                              ['familyEmail']['maxText'];
+                                        if (emailEnabled[i]) {
+                                          final RegExp regex =
+                                              RegExp(emailRegEx);
+                                          if (value!.isEmpty) {
+                                            return 'Email is Required';
+                                          }
+                                          if (value!.length ==
+                                              int.parse(jsonData[
+                                                          'familyMember${i + 1}']
+                                                      ['familyEmail']
+                                                  ['maxLength'])) {
+                                            return jsonData[
+                                                    'familyMember${i + 1}']
+                                                ['familyEmail']['maxText'];
+                                          }
+
+                                          if (!regex.hasMatch(value)) {
+                                            return jsonData[
+                                                    'familyMember${i + 1}']
+                                                ['familyEmail']['errorMsg'];
+                                          }
+                                          if (value == '') {
+                                            return jsonData[
+                                                    'familyMember${i + 1}']
+                                                ['familyEmail']['errorMsg'];
+                                          }
                                         }
 
-                                        final RegExp regex = RegExp(
-                                            jsonData['familyMember${i + 1}']
-                                                ['familyEmail']['pattern']);
-                                        if (!regex.hasMatch(value)) {
-                                          return jsonData[
-                                                  'familyMember${i + 1}']
-                                              ['familyEmail']['errorMsg'];
-                                        }
-                                        if (value == '') {
-                                          return jsonData[
-                                                  'familyMember${i + 1}']
-                                              ['familyEmail']['errorMsg'];
-                                        }
                                         return null;
                                       },
                                     ),
@@ -426,6 +454,9 @@ class _CustomerFormState extends State<CustomerForm> {
                   _emailController.add(TextEditingController());
                   isApiCallingList.add(false);
                   isDateErrorList.add(false);
+                  dropdownValue.add(null);
+                  nameEnabled.add(true);
+                  emailEnabled.add(true);
                 }
               });
             },
