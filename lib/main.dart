@@ -16,8 +16,9 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: ThemeData(
-        colorScheme:
-            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 2, 52, 255)),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Color.fromARGB(255, 2, 52, 255),
+        ),
         useMaterial3: true,
       ),
       home: CustomerForm(),
