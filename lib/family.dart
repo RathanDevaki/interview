@@ -32,7 +32,7 @@ Map<String, dynamic> jsonData = {
       "errorMsg": "Please enter Account Number of the Family Member",
       "isRepeat": true,
       "isPreview": true,
-      "displayName": "Account Number* 1",
+      "displayName": "Account Number*",
       "isError": false
     },
     "familydob": {
@@ -147,7 +147,7 @@ Map<String, dynamic> jsonData = {
       "errorMsg": "Please enter Account Number of the Family Member",
       "isRepeat": true,
       "isPreview": true,
-      "displayName": "Account Number* 2",
+      "displayName": "Account Number*",
       "isError": false
     },
     "familydob": {
@@ -262,7 +262,7 @@ Map<String, dynamic> jsonData = {
       "errorMsg": "Please enter Account Number of the Family Member",
       "isRepeat": true,
       "isPreview": true,
-      "displayName": "Account Number* 3",
+      "displayName": "Account Number* ",
       "isError": false
     },
     "familydob": {
@@ -377,7 +377,7 @@ Map<String, dynamic> jsonData = {
       "errorMsg": "Please enter Account Number of the Family Member",
       "isRepeat": true,
       "isPreview": true,
-      "displayName": "Account Number* 4",
+      "displayName": "Account Number* ",
       "isError": false
     },
     "familydob": {
@@ -492,7 +492,7 @@ Map<String, dynamic> jsonData = {
       "errorMsg": "Please enter Account Number of the Family Member",
       "isRepeat": true,
       "isPreview": true,
-      "displayName": "Account Number*5",
+      "displayName": "Account Number*",
       "isError": false
     },
     "familydob": {

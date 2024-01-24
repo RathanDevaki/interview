@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'temp.dart';
+import 'dynamicWidget.dart';
 
 void main() {
   runApp(const MyApp());
