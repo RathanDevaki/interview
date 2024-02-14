@@ -1,6 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'family.dart';
 
 class CustomerForm extends StatefulWidget {
@@ -22,7 +23,7 @@ class _CustomerFormState extends State<CustomerForm> {
   List<bool> nameEnabled = [];
   List<bool> emailEnabled = [];
   List<bool> isRepeated = [];
-  List<void Function()> apiCallback = [];
+  List<dynamic Function()> apiCallback = [];
 
   GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
@@ -74,7 +75,7 @@ class _CustomerFormState extends State<CustomerForm> {
             autovalidateMode: AutovalidateMode.onUserInteraction,
             key: _formKey,
             child: SizedBox(
-              height: 320,
+              height: 450,
               child: SingleChildScrollView(
                 scrollDirection: Axis.vertical,
                 child: Column(
@@ -129,264 +130,252 @@ class _CustomerFormState extends State<CustomerForm> {
                                       : const SizedBox(),
                                 ],
                               ),
-
+// First Row
                               const SizedBox(
                                 height: 10,
                               ),
-                              Row(
+                              Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _accNoControllers[i],
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly,
-                                      ],
-                                      onChanged: (value) {
-                                        setState(() {
-                                          isApiCallingList[i] =
-                                              (value.length == 12);
+                                  TextFormField(
+                                    controller: _accNoControllers[i],
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                    onChanged: (value) {
+                                      setState(() {
+                                        isApiCallingList[i] =
+                                            (value.length == 12);
 
-                                          for (int j = 0;
-                                              j < _accNoControllers.length;
-                                              j++) {
-                                            if (j != i &&
-                                                _accNoControllers[j].text ==
-                                                    value) {
-                                              isRepeated[i] = true;
-                                              break;
-                                            } else {
-                                              isRepeated[i] = false;
-                                            }
+                                        for (int j = 0;
+                                            j < _accNoControllers.length;
+                                            j++) {
+                                          if (j != i &&
+                                              _accNoControllers[j].text ==
+                                                  value) {
+                                            isRepeated[i] = true;
+                                            break;
+                                          } else {
+                                            isRepeated[i] = false;
                                           }
-                                          isAccError[i] = isRepeated[i];
-                                        });
-
-                                        if (isApiCallingList.length < i &&
-                                            isApiCallingList[i] &&
-                                            !isRepeated[i]) {
-                                          apiCallback[i]();
-
-                                          print('API calling');
-                                          // isApiCalling = true;
-                                          // callApi!();
                                         }
-                                      },
-                                      decoration: InputDecoration(
-                                        errorBorder: errorBorder,
-                                        focusedErrorBorder: focusErrorBorder,
-                                        errorMaxLines: 5,
-                                        errorStyle: errorStyle,
-                                        counterText: '',
-                                        labelText:
-                                            jsonData['familyMember${i + 1}']![
-                                                    'familyAccountNumber']
-                                                ['displayName'],
-                                        floatingLabelStyle: fontStyle,
-                                        hintText:
-                                            jsonData['familyMember${i + 1}']![
-                                                    'familyAccountNumber']
-                                                ['placeholder'],
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(4)),
-                                        suffixIcon: (isApiCallingList[i] &&
-                                                !isRepeated[i])
-                                            ? const Padding(
-                                                padding: EdgeInsets.only(
-                                                    right: 8,
-                                                    top: 4,
-                                                    bottom: 4),
-                                                child: SizedBox(
-                                                  height: 8,
-                                                  width: 8,
-                                                  child:
-                                                      CircularProgressIndicator(
-                                                    color: Color.fromARGB(
-                                                        255, 27, 0, 233),
-                                                    strokeWidth: 2,
-                                                  ),
-                                                ),
-                                              )
-                                            : null,
-                                      ),
-                                      maxLength: int.parse(
+                                        isAccError[i] = isRepeated[i];
+                                      });
+                                      if (isApiCallingList[i] &&
+                                          !isRepeated[i]) {
+                                        log('--->${isApiCallingList.length}, $i');
+                                      }
+                                      if (isApiCallingList.length < i &&
+                                          isApiCallingList[i] &&
+                                          !isRepeated[i]) {
+                                        apiCallback[i]();
+
+                                        print('API calling');
+                                        // isApiCalling = true;
+                                        // callApi!();
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      errorBorder: errorBorder,
+                                      focusedErrorBorder: focusErrorBorder,
+                                      errorMaxLines: 5,
+                                      errorStyle: errorStyle,
+                                      counterText: '',
+                                      labelText:
                                           jsonData['familyMember${i + 1}']![
                                                   'familyAccountNumber']
-                                              ['maxLength']),
-                                      validator: (value) {
-                                        if (i >= isRepeated.length) {
-                                          i = isRepeated.length - 1;
-                                        }
-
-                                        if (value!.length != 12) {
-                                          return '12digit required';
-                                        }
-                                        if (isRepeated[i]) {
-                                          return 'Please provide unique account details.';
-                                        }
-                                        if (isAccError[i] == true) {
-                                          return jsonData[
-                                                      'familyMember${i + 1}']![
+                                              ['displayName'],
+                                      floatingLabelStyle: fontStyle,
+                                      hintText:
+                                          jsonData['familyMember${i + 1}']![
                                                   'familyAccountNumber']
-                                              ['errorMsg'];
-                                        }
-                                        return null;
-                                      },
-                                      onSaved: (value) {},
+                                              ['placeholder'],
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                      suffixIcon: (isApiCallingList[i] &&
+                                              !isRepeated[i])
+                                          ? const Padding(
+                                              padding: EdgeInsets.only(
+                                                  right: 8, top: 4, bottom: 4),
+                                              child: SizedBox(
+                                                height: 8,
+                                                width: 8,
+                                                child:
+                                                    CircularProgressIndicator(
+                                                  color: Color.fromARGB(
+                                                      255, 27, 0, 233),
+                                                  strokeWidth: 2,
+                                                ),
+                                              ),
+                                            )
+                                          : null,
                                     ),
+                                    maxLength: int.parse(
+                                        jsonData['familyMember${i + 1}']![
+                                                'familyAccountNumber']
+                                            ['maxLength']),
+                                    validator: (value) {
+                                      if (i >= isRepeated.length) {
+                                        i = isRepeated.length - 1;
+                                      }
+
+                                      if (value!.length != 12) {
+                                        return '12digit required';
+                                      }
+                                      if (isRepeated[i]) {
+                                        return 'Please provide unique account details.';
+                                      }
+                                      if (isAccError[i] == true) {
+                                        return jsonData[
+                                                'familyMember${i + 1}']![
+                                            'familyAccountNumber']['errorMsg'];
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (value) {},
                                   ),
                                   const SizedBox(
-                                    width: 10,
+                                    height: 10,
                                   ),
-                                  Expanded(
-                                    child: Column(
-                                      children: [
-                                        TextFormField(
-                                          controller: _dobController[i],
-                                          keyboardType: TextInputType.text,
-                                          decoration: InputDecoration(
-                                            errorBorder: errorBorder,
-                                            focusedErrorBorder:
-                                                focusErrorBorder,
-                                            errorMaxLines: 5,
-                                            errorStyle: errorStyle,
-                                            border: OutlineInputBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(4)),
-                                            labelText: jsonData[
-                                                    'familyMember${i + 1}']![
-                                                'familydob']['displayName'],
-                                            hintText: jsonData[
-                                                    'familyMember${i + 1}']![
-                                                'familydob']['placeholder'],
-                                            floatingLabelStyle: fontStyle,
-                                            suffixIcon: IconButton(
-                                              icon: const Icon(
-                                                Icons.calendar_today,
-                                                color: Colors.orange,
-                                              ),
-                                              onPressed: () {},
+                                  Column(
+                                    children: [
+                                      TextFormField(
+                                        controller: _dobController[i],
+                                        keyboardType: TextInputType.text,
+                                        decoration: InputDecoration(
+                                          errorBorder: errorBorder,
+                                          focusedErrorBorder: focusErrorBorder,
+                                          errorMaxLines: 5,
+                                          errorStyle: errorStyle,
+                                          border: OutlineInputBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(4)),
+                                          labelText:
+                                              jsonData['familyMember${i + 1}']![
+                                                  'familydob']['displayName'],
+                                          hintText:
+                                              jsonData['familyMember${i + 1}']![
+                                                  'familydob']['placeholder'],
+                                          floatingLabelStyle: fontStyle,
+                                          suffixIcon: IconButton(
+                                            icon: const Icon(
+                                              Icons.calendar_today,
+                                              color: Colors.orange,
                                             ),
+                                            onPressed: () {},
                                           ),
-                                          validator: (value) {
-                                            return (isDateErrorList.length <
-                                                        i &&
-                                                    isDateErrorList[i])
-                                                ? jsonData[
-                                                        'familyMember${i + 1}']![
-                                                    'familydob']['errorMsg']
-                                                : null;
-                                          },
                                         ),
-                                        const SizedBox(height: 10),
-                                      ],
-                                    ),
+                                        validator: (value) {
+                                          return (isDateErrorList.length < i &&
+                                                  isDateErrorList[i])
+                                              ? jsonData[
+                                                      'familyMember${i + 1}']![
+                                                  'familydob']['errorMsg']
+                                              : null;
+                                        },
+                                      ),
+                                      const SizedBox(height: 10),
+                                    ],
                                   ),
                                 ],
                               ),
 
                               //2nd row begins
-                              Row(
+                              Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Expanded(
-                                    child: DropdownButtonFormField<String>(
-                                      decoration: InputDecoration(
-                                        errorBorder: errorBorder,
-                                        focusedErrorBorder: focusErrorBorder,
-                                        errorMaxLines: 2,
-                                        errorStyle: errorStyle,
-                                        contentPadding:
-                                            const EdgeInsets.all(20.0),
-                                        border: OutlineInputBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(5.0),
-                                        ),
-                                        labelText:
-                                            jsonData['familyMember${i + 1}']![
-                                                    'familyRelationship']
-                                                ['displayName'],
+                                  DropdownButtonFormField<String>(
+                                    decoration: InputDecoration(
+                                      errorBorder: errorBorder,
+                                      focusedErrorBorder: focusErrorBorder,
+                                      errorMaxLines: 2,
+                                      errorStyle: errorStyle,
+                                      contentPadding:
+                                          const EdgeInsets.all(20.0),
+                                      border: OutlineInputBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(5.0),
                                       ),
-                                      value: dropdownValue[i],
-                                      onChanged: (String? newValue) {
-                                        setState(() {
-                                          dropdownValue[i] = newValue!;
-                                        });
-                                      },
-                                      validator: (value) {
-                                        if (value == null) {
+                                      labelText:
+                                          jsonData['familyMember${i + 1}']![
+                                                  'familyRelationship']
+                                              ['displayName'],
+                                    ),
+                                    value: dropdownValue[i],
+                                    onChanged: (String? newValue) {
+                                      setState(() {
+                                        dropdownValue[i] = newValue!;
+                                      });
+                                    },
+                                    validator: (value) {
+                                      if (value == null) {
+                                        return jsonData[
+                                                'familyMember${i + 1}']![
+                                            'familyRelationship']['errorMsg'];
+                                      }
+                                      return null;
+                                    },
+                                    items: jsonData['familyMember${i + 1}']![
+                                                'familyRelationship']
+                                            ['Buttonvalues']
+                                        .map<DropdownMenuItem<String>>(
+                                            (String value) {
+                                      return DropdownMenuItem<String>(
+                                        value: value,
+                                        child: Text(value),
+                                      );
+                                    }).toList(),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  TextFormField(
+                                    controller: _nameController[i],
+                                    enabled: nameEnabled[i],
+                                    keyboardType: TextInputType.text,
+                                    maxLength: int.parse(
+                                      jsonData['familyMember${i + 1}']![
+                                          'familyName']['maxLength'],
+                                    ),
+                                    decoration: InputDecoration(
+                                      errorBorder: errorBorder,
+                                      focusedErrorBorder: focusErrorBorder,
+                                      errorMaxLines: 5,
+                                      errorStyle: errorStyle,
+                                      counterText: '',
+                                      border: OutlineInputBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(4)),
+                                      labelText:
+                                          jsonData['familyMember${i + 1}']![
+                                              'familyName']['displayName'],
+                                      hintText:
+                                          jsonData['familyMember${i + 1}']![
+                                              'familyName']['placeholder'],
+                                      floatingLabelStyle: fontStyle,
+                                    ),
+                                    validator: (value) {
+                                      if (nameEnabled[i]) {
+                                        if (value!.isEmpty) {
+                                          return 'Name is reqired';
+                                        }
+                                        final RegExp regex = RegExp(nameRegex);
+
+                                        if (!regex.hasMatch(value!)) {
                                           return jsonData[
                                                   'familyMember${i + 1}']![
-                                              'familyRelationship']['errorMsg'];
+                                              'familyName']['errorMsg'];
                                         }
-                                        return null;
-                                      },
-                                      items: jsonData['familyMember${i + 1}']![
-                                                  'familyRelationship']
-                                              ['Buttonvalues']
-                                          .map<DropdownMenuItem<String>>(
-                                              (String value) {
-                                        return DropdownMenuItem<String>(
-                                          value: value,
-                                          child: Text(value),
-                                        );
-                                      }).toList(),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: TextFormField(
-                                      controller: _nameController[i],
-                                      enabled: nameEnabled[i],
-                                      keyboardType: TextInputType.text,
-                                      maxLength: int.parse(
-                                        jsonData['familyMember${i + 1}']![
-                                            'familyName']['maxLength'],
-                                      ),
-                                      decoration: InputDecoration(
-                                        errorBorder: errorBorder,
-                                        focusedErrorBorder: focusErrorBorder,
-                                        errorMaxLines: 5,
-                                        errorStyle: errorStyle,
-                                        counterText: '',
-                                        border: OutlineInputBorder(
-                                            borderRadius:
-                                                BorderRadius.circular(4)),
-                                        labelText:
-                                            jsonData['familyMember${i + 1}']![
-                                                'familyName']['displayName'],
-                                        hintText:
-                                            jsonData['familyMember${i + 1}']![
-                                                'familyName']['placeholder'],
-                                        floatingLabelStyle: fontStyle,
-                                      ),
-                                      validator: (value) {
-                                        print(i);
-                                        if (nameEnabled[i]) {
-                                          if (value!.isEmpty) {
-                                            return 'Name is reqired';
-                                          }
-                                          final RegExp regex =
-                                              RegExp(nameRegex);
-
-                                          if (!regex.hasMatch(value!)) {
-                                            return jsonData[
+                                        if (value.length ==
+                                            int.parse(jsonData[
                                                     'familyMember${i + 1}']![
-                                                'familyName']['errorMsg'];
-                                          }
-                                          if (value.length ==
-                                              int.parse(jsonData[
-                                                      'familyMember${i + 1}']![
-                                                  'familyName']['maxLength'])) {
-                                            return jsonData[
-                                                    'familyMember${i + 1}']![
-                                                'familyName']['maxText'];
-                                          }
+                                                'familyName']['maxLength'])) {
+                                          return jsonData[
+                                                  'familyMember${i + 1}']![
+                                              'familyName']['maxText'];
                                         }
-                                      },
-                                    ),
+                                      }
+                                    },
                                   ),
                                 ],
                               ),
@@ -454,8 +443,8 @@ class _CustomerFormState extends State<CustomerForm> {
                                       },
                                     ),
                                   ),
-                                  const SizedBox(width: 10),
-                                  const Expanded(child: SizedBox()),
+                                  const SizedBox(height: 10),
+                                  //const Expanded(child: SizedBox()),
                                 ],
                               ),
                             ],
@@ -513,12 +502,12 @@ class _CustomerFormState extends State<CustomerForm> {
         _dobController.removeAt(index);
         _nameController.removeAt(index);
         _emailController.removeAt(index);
-        isApiCallingList.removeAt(index);
         isDateErrorList.removeAt(index);
         dropdownValue.removeAt(index);
         emailEnabled.removeAt(index);
         isAccError.removeAt(index);
         isRepeated.removeAt(index);
+        isApiCallingList.removeAt(index);
       }
     });
   }
